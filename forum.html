@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criador de Tópicos com Comentários</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #181818;
+            color: #fff;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #282828;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 15px rgba(0,0,0,0.2);
+        }
+        h1 {
+            text-align: center;
+        }
+        input[type="text"], textarea, input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: none;
+            background-color: #383838;
+            color: white;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #28a745;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .topic {
+            background-color: #303030;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 10px;
+            position: relative;
+        }
+        .reaction {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #505050;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .reaction-count {
+            display: inline-block;
+            margin-left: 5px;
+            color: #f1c40f;
+        }
+        .comments-section {
+            margin-top: 20px;
+        }
+        .comments-section h3 {
+            margin-bottom: 10px;
+        }
+        .comment {
+            background-color: #404040;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        .comment p {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Criar Novo Tópico</h1>
+        <form id="topicForm">
+            <input type="text" id="titulo" placeholder="Título do Tópico" required>
+            <textarea id="descricao" rows="5" placeholder="Descrição do Tópico" required></textarea>
+            <input type="file" id="arquivos" accept=".rar,.zip,image/*" multiple>
+            <button type="submit">Criar Tópico</button>
+        </form>
+
+        <div id="topicsContainer"></div>
+    </div>
+
+    <script>
+        document.getElementById('topicForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const titulo = document.getElementById('titulo').value;
+            const descricao = document.getElementById('descricao').value;
+            const arquivos = document.getElementById('arquivos').files;
+
+            // Criar o tópico
+            const topicElement = document.createElement('div');
+            topicElement.classList.add('topic');
+
+            // Título
+            const tituloElement = document.createElement('h2');
+            tituloElement.textContent = titulo;
+            topicElement.appendChild(tituloElement);
+
+            // Descrição
+            const descricaoElement = document.createElement('p');
+            descricaoElement.textContent = descricao;
+            topicElement.appendChild(descricaoElement);
+
+            // Listar arquivos
+            const filesList = document.createElement('ul');
+            for (let i = 0; i < arquivos.length; i++) {
+                const fileItem = document.createElement('li');
+                fileItem.textContent = arquivos[i].name;
+                filesList.appendChild(fileItem);
+            }
+            topicElement.appendChild(filesList);
+
+            // Reação (Curtir)
+            const reactionElement = document.createElement('div');
+            reactionElement.classList.add('reaction');
+            reactionElement.innerHTML = '👍 Curtir <span class="reaction-count">0</span>';
+            reactionElement.addEventListener('click', function() {
+                const count = reactionElement.querySelector('.reaction-count');
+                count.textContent = parseInt(count.textContent) + 1;
+            });
+            topicElement.appendChild(reactionElement);
+
+            // Seção de comentários
+            const commentsSection = document.createElement('div');
+            commentsSection.classList.add('comments-section');
+            const commentsHeader = document.createElement('h3');
+            commentsHeader.textContent = 'Comentários';
+            commentsSection.appendChild(commentsHeader);
+
+            // Formulário de adicionar comentário
+            const commentForm = document.createElement('form');
+            commentForm.innerHTML = `
+                <textarea rows="3" class="comment-input" placeholder="Adicione um comentário..."></textarea>
+                <button type="submit">Enviar Comentário</button>
+            `;
+            commentsSection.appendChild(commentForm);
+
+            // Lista de comentários
+            const commentList = document.createElement('div');
+            commentsSection.appendChild(commentList);
+            topicElement.appendChild(commentsSection);
+
+            // Enviar comentário
+            commentForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const commentText = commentForm.querySelector('.comment-input').value;
+
+                if (commentText.trim() !== '') {
+                    const commentElement = document.createElement('div');
+                    commentElement.classList.add('comment');
+                    commentElement.innerHTML = `<p>${commentText}</p>`;
+                    commentList.appendChild(commentElement);
+
+                    // Limpar o campo de comentário
+                    commentForm.querySelector('.comment-input').value = '';
+                }
+            });
+
+            // Adicionar o tópico criado à página
+            document.getElementById('topicsContainer').appendChild(topicElement);
+
+            // Limpar o formulário
+            document.getElementById('titulo').value = '';
+            document.getElementById('descricao').value = '';
+            document.getElementById('arquivos').value = '';
+        });
+    </script>
+</body>
+</html>

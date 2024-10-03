@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criador de Tópicos de Ajuda com Chat</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            display: flex;
+            background-color: #121212;
+            color: #ffffff;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #1f1f1f;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+        .sidebar a {
+            display: block;
+            padding: 10px;
+            margin-bottom: 10px;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .sidebar a:hover {
+            background-color: #3a3a3a;
+        }
+        .container {
+            flex: 1;
+            padding: 20px;
+            background: #1b1b1b;
+            border-radius: 8px;
+            margin: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #4db8ff;
+        }
+        .topic-form {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #282828;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .topic-form input, .topic-form textarea, .topic-form button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #444;
+            border-radius: 5px;
+            font-size: 16px;
+            background-color: #3a3a3a;
+            color: #ffffff;
+        }
+        .topic-form button {
+            background-color: #4db8ff;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .topic-form button:hover {
+            background-color: #0091e6;
+        }
+        .topic-list {
+            margin-top: 20px;
+        }
+        .topic-item {
+            background: #3a3a3a;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .topic-item h3 {
+            margin: 0;
+            color: #4db8ff;
+        }
+        .topic-item p {
+            margin: 5px 0;
+        }
+        .chat-container {
+            margin-top: 10px;
+            padding: 10px;
+            border-top: 2px solid #4db8ff;
+            border-radius: 5px;
+        }
+        .chat-messages {
+            height: 150px;
+            overflow-y: auto;
+            background-color: #2a2a2a;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .chat-input {
+            display: flex;
+        }
+        .chat-input input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #444;
+            border-radius: 5px;
+            margin-right: 10px;
+            background-color: #3a3a3a;
+            color: #ffffff;
+        }
+        .chat-input button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #4db8ff;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .chat-input button:hover {
+            background-color: #0091e6;
+        }
+        .chat-message {
+            margin: 5px 0;
+            padding: 5px;
+            border-radius: 5px;
+        }
+        .chat-message.user {
+            background-color: #1e7b1c;
+            align-self: flex-end;
+        }
+        .chat-message.bot {
+            background-color: #3f3f3f;
+            align-self: flex-start;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Menu</h2>
+        <a href="index.html">Início</a>
+        <a href="#">Meus Tópicos</a>
+        <a href="#">Configurações</a>
+        <a href="#">Ajuda</a>
+    </div>
+    <div class="container">
+        <h1>Criador de Tópicos de Ajuda com Chat</h1>
+        <div class="topic-form">
+            <input type="text" id="topic-title" placeholder="Título do Tópico" required>
+            <textarea id="topic-description" placeholder="Descrição do Tópico" rows="4" required></textarea>
+            <input type="file" id="topic-file" accept=".zip,.rar" required>
+            <button id="add-topic-button">Adicionar Tópico</button>
+        </div>
+        <div class="topic-list" id="topic-list">
+            <!-- Tópicos serão exibidos aqui -->
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('add-topic-button').addEventListener('click', () => {
+            const title = document.getElementById('topic-title').value;
+            const description = document.getElementById('topic-description').value;
+            const fileInput = document.getElementById('topic-file');
+            const file = fileInput.files[0];
+
+            // Verifica se todos os campos estão preenchidos
+            if (!title || !description || !file) {
+                alert('Por favor, preencha todos os campos.');
+                return;
+            }
+
+            // Cria um novo elemento para o tópico
+            const topicList = document.getElementById('topic-list');
+            const topicItem = document.createElement('div');
+            topicItem.classList.add('topic-item');
+
+            // Adiciona o título e a descrição
+            topicItem.innerHTML = `<h3>${title}</h3><p>${description}</p>`;
+
+            // Adiciona o link para o arquivo
+            const fileLink = document.createElement('a');
+            fileLink.href = URL.createObjectURL(file);
+            fileLink.download = file.name; // Nome do arquivo que será baixado
+            fileLink.innerText = 'Baixar Arquivo';
+            fileLink.style.display = 'inline-block';
+            fileLink.style.marginBottom = '10px';
+            fileLink.style.color = '#4db8ff';
+            topicItem.appendChild(fileLink);
+
+            // Cria a seção de chat
+            const chatContainer = document.createElement('div');
+            chatContainer.classList.add('chat-container');
+            const chatMessages = document.createElement('div');
+            chatMessages.classList.add('chat-messages');
+            chatMessages.id = 'chat-messages-' + Date.now(); // ID único para o chat
+            chatContainer.appendChild(chatMessages);
+            
+            const chatInput = document.createElement('div');
+            chatInput.classList.add('chat-input');
+            const chatInputField = document.createElement('input');
+            chatInputField.placeholder = 'Digite sua mensagem...';
+            const chatSendButton = document.createElement('button');
+            chatSendButton.innerText = 'Enviar';
+            chatInput.appendChild(chatInputField);
+            chatInput.appendChild(chatSendButton);
+            chatContainer.appendChild(chatInput);
+            topicItem.appendChild(chatContainer);
+            
+            // Adiciona o novo tópico à lista
+            topicList.appendChild(topicItem);
+
+            // Adiciona o comportamento do botão de envio do chat
+            chatSendButton.addEventListener('click', () => {
+                const message = chatInputField.value;
+                if (message) {
+                    const messageElement = document.createElement('div');
+                    messageElement.classList.add('chat-message', 'user');
+                    messageElement.innerText = message;
+                    chatMessages.appendChild(messageElement);
+                    chatInputField.value = ''; // Limpa o campo de entrada
+                    chatMessages.scrollTop = chatMessages.scrollHeight; // Rolagem automática
+                }
+            });
+
+            // Limpa os campos do formulário
+            document.getElementById('topic-title').value = '';
+            document.getElementById('topic-description').value = '';
+            fileInput.value = ''; // Limpa o campo de arquivo
+        });
+    </script>
+</body>
+</html>
+
+
